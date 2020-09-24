@@ -1,0 +1,42 @@
+<!doctype html>
+<head>
+<title>Trading Prediction</title>
+</head>
+
+
+
+<!-- {% if name %}
+  <h1>Hello {{ name }}!</h1>
+{% else %}
+  <h1>Hello, World!</h1>
+{% endif %}
+
+
+{{ message }}
+ -->
+<body>
+
+
+	<label for="societies">Choose a society:</label>
+		<select id="societies">
+			<option value="aapl">Apple</option>
+		</select> 
+
+	<button type="button">Predict!</button> 
+
+
+ </body>
+
+
+
+	<p>Today, AAPL's stock price is {{last_day}} $ </p>
+
+	 {% if diif < 0 %}
+	 	<p>My prediction for tomorrow is <style type="text/css" font-color="green">{{pred_price}}</style></p>
+	 	<p>I advise you to <bold>buy</bold></p>
+
+	 {% else %}
+	 	<p>My prediction for tomorrow is <style type="text/css" font-color="red">{{pred_price}}</style></p>
+	 	<p>I advise you to <bold>sell</bold></p>
+
+	 {% endif %}
