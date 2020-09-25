@@ -8,6 +8,9 @@ import pandas as pd
 import numpy as np
 import os
 import time
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras.models import load_model
 
 @st.cache(hash_funcs={MongoClient: id})
 def get_client():
@@ -25,24 +28,24 @@ society_choice = st.sidebar.radio('chose a society',('Microsoft', 'Apple', 'Goog
 
 if society_choice == 'Microsoft':
 	collection = db.MSFT
-	model = "models/MSFT_model.h5"
+	model = keras.models.load_model("models/MSFT_model.h5",compile = False)
 
 
 
 
 if society_choice == 'Google':
 	collection = db.GOOGL
-	model = "models/GOOGL_model.h5"
+	model = keras.models.load_model("models/GOOGL_model.h5", compile = False)
 
 
 
 if society_choice == 'Apple':
 	collection = db.AAPL
-	model = "models/AAPL_model.h5"
+	model = keras.models.load_model("models/AAPL_model.h5", compile = False)
 
 
-data = pd.DataFrame(list(collection.find()))
-
+#data = pd.DataFrame(list(collection.find()))
+data = list(collection.find())
 
 
 
@@ -53,15 +56,13 @@ def buy_or_sell():
 	x_test = np.array(data)
 
 	#reshaping the data #we need a 3 dimensional shape
-	x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
+	x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1]))
 
 	x_test.shape
 
 	#get the model predicted price values
 	predictions = model.predict(x_test)
 	predictions = scaler.inverse_transform(predictions) #unscaling the values
-
-
 
 
 	new_df = collection.filter(['Close'])
@@ -85,7 +86,11 @@ def buy_or_sell():
 	last_day = new_df[-1:].values
 	diif = last_day - pred_price
 
-	return diif, last_day, pred_price
+	#return diif, last_day, pred_price
+	return pred_price
+
+
+	#??????????????
 	# if diif < 0: #baisse
 	#     advise ="i advise you to buy"
 	#     #print(advise)
@@ -97,7 +102,7 @@ def buy_or_sell():
 
 
 
-
+buy_or_sell()
 
 
 bar = st.progress(0)
@@ -107,8 +112,10 @@ if st.button("predict tomorrow's stock price"):
 		bar.progress(i * 10)
 		# wait
 		time.sleep(0.07)
-	
-	st.write("Bientôt, les prédictions, xoxo")
+
+	if diif < 0: # decrease
+		st.write("i advise you to sell")
+	st.write("soon, stock exchang's predictions, xoxo")
 
 
 
